@@ -1,16 +1,19 @@
 #!/usr/bin/env python
+# encoding: utf-8
 
-from pyquery import PyQuery as pq
-import requests
+import os
 
-payload = {
-    'utf8': '✓',
-    'identity': 'username or email',
-    'password': 'secret'
-}
+from selenium import webdriver
+from pprint import pprint
 
-# authenticity_tokenの取得
-s = requests.Session()
-r = s.get('https://qiita.com')
-print(r.text)
-d = pq(r.text)
+driver = webdriver.PhantomJS()
+#driver = webdriver.Firefox()
+driver.get("https://www.dmm.com/my/-/login/=/path=DRVESVwZTldRDlBRRFdIUwwIGFVfVEs_")
+login_id = driver.find_element_by_id("login_id")
+login_id.send_keys(os.environ["DMM_LOGIN_ID"])
+password = driver.find_element_by_id("password")
+password.send_keys(os.environ["DMM_LOGIN_PASSWORD"])
+driver.find_element_by_tag_name("form").submit()
+print(driver.page_source)
+
+driver.quit()
