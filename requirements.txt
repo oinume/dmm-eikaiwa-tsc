@@ -3,3 +3,5 @@ lxml==3.4.4
 cssselect==0.9.1
 pyquery==1.2.9
 selenium==2.48.0
+gunicorn==19.3.0
+bottle==0.12.8

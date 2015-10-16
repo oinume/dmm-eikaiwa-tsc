@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ ! -d venv ]; then
-    virtualenv --distribute venv
+    virtualenv --python=/usr/local/bin/python3.5 --distribute venv
     . venv/bin/activate
     pip install -r requirements.txt
 fi
