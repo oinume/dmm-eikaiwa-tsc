@@ -32,20 +32,3 @@ def index():
         ret += '%s=%s\n' % (k, v)
 
     return ret
-
-# if __name__ == '__main__':
-#     app.log.debug("config = %s" % app.config)
-#     #app.log.debug("routes = %s" % app.routes)
-#     if app.config['debug']:
-#         routes_debug = ''
-#         # TODO: 関数が定義されているファイル名も表示する
-#         for route in app.routes:
-#             routes_debug += "%6s %s\n" % (route.method, route.rule)
-#         #self.router.add(route.rule, route.method, route, name=route.name)
-#         #inspect.getargspec(func)
-#         app.log.debug("===== routes =====\n" + routes_debug)
-#
-#     port = os.environ.get('PORT')
-#     if port:
-#         config['port'] = port
-#     run(app, **config)
