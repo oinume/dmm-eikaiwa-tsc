@@ -5,3 +5,4 @@ pyquery==1.2.9
 selenium==2.48.0
 gunicorn==19.3.0
 bottle==0.12.8
+PyMySQL==0.6.7
