@@ -25,7 +25,9 @@ if __name__ == "__main__":
         print("TEACHER_IDS is empty, exiting.", file=sys.stderr)
         sys.exit(1)
     fetcher = tsc.fetcher.TeacherScheduleFetcher()
-    for teacher_id in teacher_ids:
-        print("teacher_id = {}".format(teacher_id))
-        fetcher.fetch(teacher_id)
-    fetcher.close()
+    try:
+        for teacher_id in teacher_ids:
+            print("teacher_id = {}".format(teacher_id))
+            fetcher.fetch(teacher_id)
+    finally:
+        fetcher.close()

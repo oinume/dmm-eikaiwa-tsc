@@ -19,7 +19,7 @@ import sqlalchemy as sa
 def upgrade():
     op.create_table(
         "teacher",
-        sa.Column("id", sa.Integer, primary_key=True),
+        sa.Column("id", sa.Integer, primary_key=True, autoincrement=False),
         sa.Column("name", sa.String(255), nullable=False, server_default=""),
     )
 
