@@ -5,15 +5,15 @@ import sys
 
 # TODO: Make setup.py
 def set_lib_path(file):
-    parent, bin_dir = os.path.split(os.path.dirname(os.path.abspath(file)))
+    parent, bin = os.path.split(os.path.dirname(os.path.abspath(file)))
     for dir in ('lib', ''):
         path = os.path.join(parent, dir)
         if os.path.exists(path):
             sys.path.insert(0, path)
-    return parent, bin_dir
+    return parent, bin
 
 
-parent, bin_dir = set_lib_path(__file__)
+parent_dir, bin_dir = set_lib_path(__file__)
 import tsc.fetcher
 
 if __name__ == "__main__":
@@ -28,3 +28,4 @@ if __name__ == "__main__":
     for teacher_id in teacher_ids:
         print("teacher_id = {}".format(teacher_id))
         fetcher.fetch(teacher_id)
+    fetcher.close()
