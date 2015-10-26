@@ -1,7 +1,8 @@
 # coding: utf-8
 from selenium import webdriver
-from pyquery import PyQuery
+import lxml.html
 import tsc.db
+from pprint import pprint
 
 class TeacherScheduleFetcher:
 
@@ -14,14 +15,21 @@ class TeacherScheduleFetcher:
         url_base = "http://eikaiwa.dmm.com/teacher/index/{0}/"
         b = self.browser
         b.get(url_base.format(teacher_id))
-        d = PyQuery(b.page_source)
-        title = d("title").text()
+
+        root = lxml.html.fromstring(b.page_source)
+        title = root.xpath("//title")[0].text
         name = title.split("-")[0].strip()
-        cursor = self.conn.cursor()
-        cursor.execute(
-            "INSERT INTO teacher VALUES (%s, %s) ON DUPLICATE KEY UPDATE name=%s",
-            (teacher_id, name, name,)
-        )
+        with self.conn.cursor() as cursor:
+            cursor.execute(
+                "INSERT INTO teacher VALUES (%s, %s) ON DUPLICATE KEY UPDATE name=%s",
+                (teacher_id, name, name,)
+            )
+
+        times = root.xpath("//ul[@class='oneday']//li")
+        for time in times:
+            print("time = ", time.text.strip(), time.attrib["class"])
+        #pprint(date)
+
 
     def close(self):
         self.conn.close()
