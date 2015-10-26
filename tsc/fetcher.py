@@ -1,8 +1,11 @@
 # coding: utf-8
+import datetime
+import re
+
 from selenium import webdriver
 import lxml.html
 import tsc.db
-from pprint import pprint
+
 
 class TeacherScheduleFetcher:
 
@@ -25,11 +28,37 @@ class TeacherScheduleFetcher:
                 (teacher_id, name, name,)
             )
 
-        times = root.xpath("//ul[@class='oneday']//li")
-        for time in times:
-            print("time = ", time.text.strip(), time.attrib["class"])
-        #pprint(date)
+        date = datetime.date.today()
+        time_items = root.xpath("//ul[@class='oneday']//li")
+        for time_item in time_items:
+            time_class = time_item.attrib["class"]
+            text = time_item.text_content().strip()
+            print("{time_class}:{text}".format(**locals()))
+            # blank, reservable, reserved
+            #date_str = ""
+            if time_class == "date":
+                match = re.match(r"([\d]+)月([\d]+)日(.+)", text)
+                if match:
+                    #print(match.group(1), match.group(2))
+                    date = date.replace(date.year, int(match.group(1)), int(match.group(2)))
+                    print(date)
+                #print(date_str)
+            elif time_class.startswith("t-"):
+                tmp = time_class.split("-")
+                tmp[1], tmp[2]
+            else:
+                pass
 
+        """
+        t-22-30:予約済
+        t-23-00:
+        t-23-30:
+        t-24-00:
+        t-24-30:
+        t-25-00:
+        t-25-30:
+        date:10月28日(水)
+        """
 
     def close(self):
         self.conn.close()
