@@ -33,32 +33,23 @@ class TeacherScheduleFetcher:
         for time_item in time_items:
             time_class = time_item.attrib["class"]
             text = time_item.text_content().strip()
-            print("{time_class}:{text}".format(**locals()))
+            #print("{time_class}:{text}".format(**locals()))
             # blank, reservable, reserved
             #date_str = ""
             if time_class == "date":
                 match = re.match(r"([\d]+)月([\d]+)日(.+)", text)
                 if match:
-                    #print(match.group(1), match.group(2))
                     date = date.replace(date.year, int(match.group(1)), int(match.group(2)))
-                    print(date)
-                #print(date_str)
-            elif time_class.startswith("t-"):
+                    #print(date)
+            elif time_class.startswith("t-") and text != "":
                 tmp = time_class.split("-")
-                tmp[1], tmp[2]
+                dt = datetime.datetime(date.year, date.month, date.day, int(tmp[1]), int(tmp[2]), 0, 0)
+                status = "reservable" if text == "予約済" else "reserved"
+                print("{dt}:{status}".format(**locals()))
+                # TODO: INSERT TO DB or append list
             else:
+                #print("else")
                 pass
-
-        """
-        t-22-30:予約済
-        t-23-00:
-        t-23-30:
-        t-24-00:
-        t-24-30:
-        t-25-00:
-        t-25-30:
-        date:10月28日(水)
-        """
 
     def close(self):
         self.conn.close()
