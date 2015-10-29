@@ -28,6 +28,7 @@ if __name__ == "__main__":
     try:
         for teacher_id in teacher_ids:
             print("teacher_id = {}".format(teacher_id))
-            fetcher.fetch(teacher_id)
+            teacher_name, schedules = fetcher.fetch(teacher_id)
+            print("{teacher_name}".format(**locals()))
     finally:
         fetcher.close()
