@@ -20,3 +20,11 @@ def connect() -> pymysql.connections.Connection:
         charset="utf8mb4",
         autocommit=True,
         cursorclass=pymysql.cursors.DictCursor)
+
+
+def insert_teacher_name(conn: pymysql.connections.Connection, id: int, name: str):
+    with conn.cursor() as cursor:
+        cursor.execute(
+            "INSERT INTO teacher VALUES (%s, %s) ON DUPLICATE KEY UPDATE name=%s",
+            (id, name, name,)
+        )
