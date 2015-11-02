@@ -1,3 +1,4 @@
+import enum
 import os
 import urllib.parse
 import pymysql
@@ -5,6 +6,9 @@ import pymysql.cursors
 
 # Register database schemes in URLs.
 urllib.parse.uses_netloc.append("mysql")
+
+
+ScheduleStatus = enum.Enum("ScheduleStatus", "reservable reserved finished")
 
 
 def connect() -> pymysql.connections.Connection:
@@ -28,3 +32,15 @@ def insert_teacher_name(conn: pymysql.connections.Connection, id: int, name: str
             "INSERT INTO teacher VALUES (%s, %s) ON DUPLICATE KEY UPDATE name=%s",
             (id, name, name,)
         )
+
+
+def insert_teacher_schedule(conn, teacher_id, schedules):
+    with conn.cursor() as cursor:
+        values = []
+        sql = "INSERT INTO schedule VALUES"
+        for schedule in schedules:
+            sql += " (%s, %s, %s),"
+            status = ScheduleStatus[schedule["status"]].value
+            values.extend([teacher_id, str(schedule["datetime"]), status])
+        sql = sql[:-1]
+        cursor.execute(sql, values)

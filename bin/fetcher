@@ -33,5 +33,6 @@ if __name__ == "__main__":
             teacher_name, schedules = fetcher.fetch(teacher_id)
             print("{teacher_name}".format(**locals()))
             tsc.db.insert_teacher_name(conn, teacher_id, teacher_name)
+            tsc.db.insert_teacher_schedule(conn, teacher_id, schedules)
     finally:
         fetcher.close()
