@@ -30,10 +30,17 @@ if __name__ == "__main__":
     try:
         for teacher_id in teacher_ids:
             print("teacher_id = {}".format(teacher_id))
-            teacher_name, schedules = fetcher.fetch(teacher_id)
-            print("{teacher_name}".format(**locals()))
-            tsc.db.insert_teacher_name(conn, teacher_id, teacher_name)
-            tsc.db.insert_teacher_schedule(conn, teacher_id, schedules)
+            teacher, schedules = fetcher.fetch(teacher_id)
+            print("{teacher.name}".format(**locals()))
+            tsc.db.insert_teacher_name(conn, teacher.id, teacher.name)
+            tsc.db.insert_teacher_schedule(conn, teacher.id, schedules)
+
+            # teacher = fetcher.fetch(teacher_id)
+            # teacher.name
+            # teacher.schedules
+            # teacher.update(conn)
+            # teacher.update_schedules(conn)
+            # teacher.find_last_schedules
     finally:
         fetcher.close()
         conn.close()

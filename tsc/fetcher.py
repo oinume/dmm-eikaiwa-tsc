@@ -5,6 +5,7 @@ import re
 from selenium import webdriver
 import lxml.html
 import tsc.db
+from tsc.models import Teacher
 from typing import Any, List, Tuple
 
 
@@ -14,7 +15,7 @@ class TeacherScheduleFetcher:
         #self.browser = webdriver.Firefox()
         self.conn = tsc.db.connect()
 
-    def fetch(self, teacher_id: int) -> Tuple[str, List[Any]]:
+    def fetch(self, teacher_id: int) -> Tuple[Teacher, List[Any]]:
         url_base = "http://eikaiwa.dmm.com/teacher/index/{0}/"
         b = self.browser
         b.get(url_base.format(teacher_id))
@@ -22,11 +23,7 @@ class TeacherScheduleFetcher:
         root = lxml.html.fromstring(b.page_source)
         title = root.xpath("//title")[0].text
         name = title.split("-")[0].strip()
-        # with self.conn.cursor() as cursor:
-        #     cursor.execute(
-        #         "INSERT INTO teacher VALUES (%s, %s) ON DUPLICATE KEY UPDATE name=%s",
-        #         (teacher_id, name, name,)
-        #     )
+        teacher = Teacher(teacher_id, name)
 
         # schedule, reservation
         date = datetime.date.today()
@@ -59,7 +56,7 @@ class TeacherScheduleFetcher:
                 })
             else:
                 pass
-        return name, schedules
+        return teacher, schedules
 
     def close(self):
         self.conn.close()
