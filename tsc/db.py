@@ -40,8 +40,7 @@ def insert_teacher_schedule(conn, teacher_id, schedules):
         sql = "INSERT INTO schedule VALUES"
         for schedule in schedules:
             sql += " (%s, %s, %s),"
-            status = ScheduleStatus[schedule["status"]].value
-            values.extend([teacher_id, str(schedule["datetime"]), status])
+            values.extend([teacher_id, str(schedule.datetime), schedule.status.value])
         sql = sql[:-1]
         sql += " ON DUPLICATE KEY UPDATE status=VALUES(status)"
         cursor.execute(sql, values)

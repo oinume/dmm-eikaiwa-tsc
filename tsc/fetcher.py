@@ -4,8 +4,7 @@ import re
 
 from selenium import webdriver
 import lxml.html
-import tsc.db
-from tsc.models import Teacher
+from tsc.models import Schedule, ScheduleStatus, Teacher
 from typing import Any, List, Tuple
 
 
@@ -13,7 +12,6 @@ class TeacherScheduleFetcher:
     def __init__(self):
         self.browser = webdriver.PhantomJS()
         #self.browser = webdriver.Firefox()
-        self.conn = tsc.db.connect()
 
     def fetch(self, teacher_id: int) -> Tuple[Teacher, List[Any]]:
         url_base = "http://eikaiwa.dmm.com/teacher/index/{0}/"
@@ -50,14 +48,11 @@ class TeacherScheduleFetcher:
                 else:
                     raise(Exception("Unknown schedule text:{0}".format(text)))
                 print("{dt}:{status}".format(**locals()))
-                schedules.append({
-                    "datetime": dt,
-                    "status": status,
-                })
+                schedule = Schedule(teacher.id, dt, ScheduleStatus[status])
+                schedules.append(schedule)
             else:
                 pass
         return teacher, schedules
 
     def close(self):
-        self.conn.close()
         self.browser.quit()
