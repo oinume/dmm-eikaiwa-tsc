@@ -36,3 +36,4 @@ if __name__ == "__main__":
             tsc.db.insert_teacher_schedule(conn, teacher_id, schedules)
     finally:
         fetcher.close()
+        conn.close()

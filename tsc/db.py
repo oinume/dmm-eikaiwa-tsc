@@ -43,4 +43,5 @@ def insert_teacher_schedule(conn, teacher_id, schedules):
             status = ScheduleStatus[schedule["status"]].value
             values.extend([teacher_id, str(schedule["datetime"]), status])
         sql = sql[:-1]
+        sql += " ON DUPLICATE KEY UPDATE status=VALUES(status)"
         cursor.execute(sql, values)
