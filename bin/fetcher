@@ -15,6 +15,7 @@ def set_lib_path(file):
 
 parent_dir, bin_dir = set_lib_path(__file__)
 import tsc.fetcher
+import tsc.db
 
 if __name__ == "__main__":
     teacher_ids_str = os.environ.get("TEACHER_IDS")
@@ -25,9 +26,14 @@ if __name__ == "__main__":
         print("TEACHER_IDS is empty, exiting.", file=sys.stderr)
         sys.exit(1)
     fetcher = tsc.fetcher.TeacherScheduleFetcher()
+    conn = tsc.db.connect()
     try:
         for teacher_id in teacher_ids:
             print("teacher_id = {}".format(teacher_id))
-            fetcher.fetch(teacher_id)
+            teacher_name, schedules = fetcher.fetch(teacher_id)
+            print("{teacher_name}".format(**locals()))
+            tsc.db.insert_teacher_name(conn, teacher_id, teacher_name)
+            tsc.db.insert_teacher_schedule(conn, teacher_id, schedules)
     finally:
         fetcher.close()
+        conn.close()
