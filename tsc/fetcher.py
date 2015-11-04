@@ -1,10 +1,11 @@
 # coding: utf-8
+import copy
 import datetime
 import re
 
 from selenium import webdriver
 import lxml.html
-import tsc.db
+from tsc.models import Schedule, ScheduleStatus, Teacher
 from typing import Any, List, Tuple
 
 
@@ -12,9 +13,8 @@ class TeacherScheduleFetcher:
     def __init__(self):
         self.browser = webdriver.PhantomJS()
         #self.browser = webdriver.Firefox()
-        self.conn = tsc.db.connect()
 
-    def fetch(self, teacher_id: int) -> Tuple[str, List[Any]]:
+    def fetch(self, teacher_id: int) -> Tuple[Teacher, List[Any]]:
         url_base = "http://eikaiwa.dmm.com/teacher/index/{0}/"
         b = self.browser
         b.get(url_base.format(teacher_id))
@@ -22,14 +22,11 @@ class TeacherScheduleFetcher:
         root = lxml.html.fromstring(b.page_source)
         title = root.xpath("//title")[0].text
         name = title.split("-")[0].strip()
-        # with self.conn.cursor() as cursor:
-        #     cursor.execute(
-        #         "INSERT INTO teacher VALUES (%s, %s) ON DUPLICATE KEY UPDATE name=%s",
-        #         (teacher_id, name, name,)
-        #     )
+        teacher = Teacher(teacher_id, name)
 
         # schedule, reservation
-        date = datetime.date.today()
+        original_date = datetime.date.today()
+        date = copy.copy(original_date)
         time_items = root.xpath("//ul[@class='oneday']//li")
         schedules = []
         for time_item in time_items:
@@ -43,7 +40,14 @@ class TeacherScheduleFetcher:
                     date = date.replace(date.year, int(match.group(1)), int(match.group(2)))
             elif time_class.startswith("t-") and text != "":
                 tmp = time_class.split("-")
-                dt = datetime.datetime(date.year, date.month, date.day, int(tmp[1]), int(tmp[2]), 0, 0)
+                hour, minute = int(tmp[1]), int(tmp[2])
+                if hour >= 24:
+                    # 24:30 -> 00:30
+                    hour -= 24
+                    if date == original_date:
+                        # Set date to next day for 24:30
+                        date += datetime.timedelta(days=1)
+                dt = datetime.datetime(date.year, date.month, date.day, hour, minute, 0, 0)
                 if text == "終了":
                     status = "finished"
                 elif text == "予約済":
@@ -53,14 +57,11 @@ class TeacherScheduleFetcher:
                 else:
                     raise(Exception("Unknown schedule text:{0}".format(text)))
                 print("{dt}:{status}".format(**locals()))
-                schedules.append({
-                    "datetime": dt,
-                    "status": status,
-                })
+                schedule = Schedule(teacher.id, dt, ScheduleStatus[status])
+                schedules.append(schedule)
             else:
                 pass
-        return name, schedules
+        return teacher, schedules
 
     def close(self):
-        self.conn.close()
         self.browser.quit()
