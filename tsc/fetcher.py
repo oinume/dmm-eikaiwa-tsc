@@ -1,25 +1,27 @@
 # coding: utf-8
 import copy
 import datetime
-import re
-
-from selenium import webdriver
 import lxml.html
-from tsc.models import Schedule, ScheduleStatus, Teacher
+import re
+import requests
 from typing import Any, List, Tuple
+
+from tsc.models import Schedule, ScheduleStatus, Teacher
 
 
 class TeacherScheduleFetcher:
     def __init__(self):
-        self.browser = webdriver.PhantomJS()
-        #self.browser = webdriver.Firefox()
+        self._session = requests.Session()
+        self._session.mount("http://", requests.adapters.HTTPAdapter(max_retries=3))
 
     def fetch(self, teacher_id: int) -> Tuple[Teacher, List[Any]]:
         url_base = "http://eikaiwa.dmm.com/teacher/index/{0}/"
-        b = self.browser
-        b.get(url_base.format(teacher_id))
+        url = url_base.format(teacher_id)
+        res = self._session.get(url, timeout=5)
+        if res.status_code != 200:
+            raise(Exception("fetch error: url={0}, status={1}".format(url, res.status_code)))
 
-        root = lxml.html.fromstring(b.page_source)
+        root = lxml.html.fromstring(res.text)
         title = root.xpath("//title")[0].text
         name = title.split("-")[0].strip()
         teacher = Teacher(teacher_id, name)
@@ -64,4 +66,4 @@ class TeacherScheduleFetcher:
         return teacher, schedules
 
     def close(self):
-        self.browser.quit()
+        self._session.close()
