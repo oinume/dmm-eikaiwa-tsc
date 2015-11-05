@@ -24,23 +24,3 @@ def connect() -> pymysql.connections.Connection:
         charset="utf8mb4",
         autocommit=True,
         cursorclass=pymysql.cursors.DictCursor)
-
-
-def insert_teacher_name(conn: pymysql.connections.Connection, id: int, name: str):
-    with conn.cursor() as cursor:
-        cursor.execute(
-            "INSERT INTO teacher VALUES (%s, %s) ON DUPLICATE KEY UPDATE name=%s",
-            (id, name, name,)
-        )
-
-
-def insert_teacher_schedule(conn, teacher_id, schedules):
-    with conn.cursor() as cursor:
-        values = []
-        sql = "INSERT INTO schedule VALUES"
-        for schedule in schedules:
-            sql += " (%s, %s, %s),"
-            values.extend([teacher_id, str(schedule.datetime), schedule.status.value])
-        sql = sql[:-1]
-        sql += " ON DUPLICATE KEY UPDATE status=VALUES(status)"
-        cursor.execute(sql, values)

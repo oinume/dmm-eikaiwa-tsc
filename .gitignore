@@ -62,3 +62,6 @@ target/
 
 # Vagrant
 .vagrant
+
+# Mac
+.DS_Store
