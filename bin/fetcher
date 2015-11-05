@@ -41,12 +41,14 @@ if __name__ == "__main__":
 
             # TODO: fetch db schedules and then compare
             from_date = datetime.date.today()
-            to_date = from_date + datetime.timedelta(days=7)
+            to_date = from_date + datetime.timedelta(days=6)
             schedules = db.find_schedules(teacher_id, from_date, to_date)  # type: List[Schedule]
             from pprint import pprint
             pprint(schedules)
+            print("---")
+            pprint(new_schedules)
 
-            #db.update_schedules(new_schedules)
+#db.update_schedules(new_schedules)
     finally:
         fetcher.close()
         if conn:

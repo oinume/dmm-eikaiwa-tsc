@@ -66,7 +66,7 @@ WHERE
 """.strip()
             cursor.execute(
                 sql,
-                (teacher_id, from_date.strftime("%Y-%m-%d"), to_date.strftime("%Y-%m-%d"),)
+                (teacher_id, from_date.strftime("%Y-%m-%d"), to_date.strftime("%Y-%m-%d"))
             )
             print(cursor._last_executed)
 
