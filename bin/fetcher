@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
+import datetime
 import os
 import sys
+from typing import List
+
 
 # TODO: Make setup.py
 def set_lib_path(file):
@@ -15,8 +18,7 @@ def set_lib_path(file):
 
 parent_dir, bin_dir = set_lib_path(__file__)
 import tsc.fetcher
-import tsc.db
-from tsc.models import DBMapper
+from tsc.models import connect, DBMapper, Schedule
 
 if __name__ == "__main__":
     teacher_ids_str = os.environ.get("TEACHER_IDS")
@@ -28,15 +30,24 @@ if __name__ == "__main__":
         sys.exit(1)
     fetcher = tsc.fetcher.TeacherScheduleFetcher()
     try:
-        conn = tsc.db.connect()
+        conn = connect()
         db = DBMapper(conn)
         for teacher_id in teacher_ids:
             print("teacher_id = {}".format(teacher_id))
-            teacher, schedules = fetcher.fetch(teacher_id)
+            teacher, new_schedules = fetcher.fetch(teacher_id)
             print("{teacher.name}".format(**locals()))
             db.update_teacher(teacher)
+
             # TODO: fetch db schedules and then compare
-            db.update_schedules(schedules)
+            from_date = datetime.date.today()
+            to_date = from_date + datetime.timedelta(days=6)
+            schedules = db.find_schedules(teacher_id, from_date, to_date)  # type: List[Schedule]
+            from pprint import pprint
+            pprint(schedules)
+            print("---")
+            pprint(new_schedules)
+
+            #db.update_schedules(new_schedules)
     finally:
         fetcher.close()
         if conn:

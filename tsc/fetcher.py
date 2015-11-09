@@ -34,7 +34,7 @@ class TeacherScheduleFetcher:
         for time_item in time_items:
             time_class = time_item.attrib["class"]
             text = time_item.text_content().strip()
-            #print("{time_class}:{text}".format(**locals()))
+            # print("{time_class}:{text}".format(**locals()))
             # blank, reservable, reserved
             if time_class == "date":
                 match = re.match(r"([\d]+)月([\d]+)日(.+)", text)
