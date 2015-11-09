@@ -1,6 +1,29 @@
 import datetime
 import enum
+import os
+import pymysql
+import pymysql.cursors
 from typing import List
+import urllib.parse
+# Register database schemes in URLs.
+urllib.parse.uses_netloc.append("mysql")
+
+
+def connect() -> pymysql.connections.Connection:
+    url_env = os.environ.get("CLEARDB_DATABASE_URL")
+    if not url_env:
+        raise Exception("Environment 'CLEARDB_DATABASE_URL' is not defined.")
+    url = urllib.parse.urlparse(url_env)
+    return pymysql.connect(
+        host=url.hostname,
+        user=url.username,
+        password=url.password,
+        database=url.path[1:],
+        charset="utf8mb4",
+        autocommit=True,
+        cursorclass=pymysql.cursors.DictCursor)
+
+
 
 class Teacher:
 
@@ -68,7 +91,7 @@ WHERE
                 sql,
                 (teacher_id, from_date.strftime("%Y-%m-%d"), to_date.strftime("%Y-%m-%d"))
             )
-            print(cursor._last_executed)
+            #print(cursor._last_executed)
 
             schedules = []
             for row in cursor.fetchall():
