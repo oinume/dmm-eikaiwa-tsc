@@ -19,14 +19,8 @@ if sys.argv[-1] == "publish":
     os.system("python setup.py sdist upload")
     sys.exit()
 
-# TODO
-tests_require = [
-    'flexmock', 'pytest', 'pytest-cov',
-    'sphinx', 'sphinx_rtd_theme',
-]
-
-install_requires = read_file("requirements.txt").splitlines()
-
+install_requires = read_file("requirements/base.txt").splitlines()
+tests_require = read_file("requirements/development.txt").splitlines()
 setup(
     name="dmm-eikaiwa-tsc",
     version="1.0.0",
@@ -41,7 +35,7 @@ setup(
     zip_safe=False,
     platforms="unix",
     install_requires=install_requires,
-#    tests_require=tests_require,
+    tests_require=tests_require[1:],
 #    data_files=[],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
