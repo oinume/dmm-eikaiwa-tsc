@@ -24,7 +24,6 @@ def connect() -> pymysql.connections.Connection:
         cursorclass=pymysql.cursors.DictCursor)
 
 
-
 class Teacher:
 
     def __init__(self, id: int, name: str):
@@ -97,3 +96,8 @@ WHERE
             for row in cursor.fetchall():
                 schedules.append(Schedule(row["teacher_id"], row["datetime"], ScheduleStatus(row["status"])))
             return schedules
+
+
+def diff_schedules(schedules1: List[Schedule], schedules2: List[Schedule]):
+
+    pass
