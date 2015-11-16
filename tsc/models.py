@@ -1,4 +1,5 @@
 import datetime
+import difflib
 import enum
 import os
 import pymysql
@@ -35,7 +36,7 @@ class Teacher:
 
 
 ScheduleStatus = enum.Enum("ScheduleStatus", "reservable reserved finished")
-
+import json
 
 class Schedule:
 
@@ -46,6 +47,19 @@ class Schedule:
 
     def __repr__(self) -> str:
         return "<Schedule({0}, {1}, {2})>".format(self.teacher_id, self.datetime, self.status.name)
+
+    @classmethod
+    def from_json(cls, json_str):
+        json_dict = json.loads(json_str)
+        return cls(**json_dict)
+
+    def to_json(self):
+        d = {
+            "teacher_id": self.teacher_id,
+            "datetime": self.datetime.strftime("%Y-%m-%d %H:%M:%S"),
+            "status": self.status.name
+        }
+        return json.dumps(d)
 
 
 class DBMapper:
@@ -99,5 +113,6 @@ WHERE
 
 
 def diff_schedules(schedules1: List[Schedule], schedules2: List[Schedule]):
-
-    pass
+    d = difflib.Differ()
+    diff = d.compare(schedules1, schedules2)
+    return diff
