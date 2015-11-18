@@ -54,18 +54,21 @@ class Schedule:
 
     @classmethod
     def get_new_reservable_schedules(
-        cls, old_schedules: List[str], new_schedules: List[str]
+        cls, old_schedules: List["Schedule"], new_schedules: List["Schedule"]
     ) -> List["Schedule"]:
+        old = [o.to_json() for o in old_schedules]
+        new = [o.to_json() for o in new_schedules]
+
         differ = difflib.Differ()
         ret = []
-        diffs = list(differ.compare(old_schedules, new_schedules))
+        diffs = list(differ.compare(old, new))
         for i, d in enumerate(diffs):
             if d.startswith("+ "):
-                if i == len(diffs) - 1:
-                    ret.append(cls.from_json(d[1:]))
-                if i < len(diffs) - 1 and not diffs[i+1].startswith("? "):
-                    ret.append(cls.from_json(d[1:]))
-            print("line{}:{}".format(i, d))
+                if (i == len(diffs) - 1) or (i < len(diffs) - 1 and not diffs[i+1].startswith("? ")):
+                    schedule = cls.from_json(d[1:])
+                    if schedule.status == ScheduleStatus.reservable:
+                        ret.append(schedule)
+            #print("line{}:{}".format(i, d))
         return ret
 
     @classmethod
