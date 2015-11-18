@@ -49,9 +49,22 @@ class Schedule:
         return "<Schedule({0}, {1}, {2})>".format(self.teacher_id, self.datetime, self.status.name)
 
     @classmethod
+    def get_new_reservable_schedules(
+        cls, old_schedules: List[str], new_schedules: List[str]
+    ) -> List["Schedule"]:
+        differ = difflib.Differ()
+        ret = []
+        for d in differ.compare(old_schedules, new_schedules):
+            if str(d).startswith("+ "):
+                # TODO: append only newly added
+                ret.append(cls.from_json(d[2:]))
+            print("line:", d)
+        return ret
+
+    @classmethod
     def from_json(cls, json_str):
-        json_dict = json.loads(json_str)
-        return cls(**json_dict)
+        d = json.loads(json_str)
+        return cls(d["teacher_id"], d["datetime"], ScheduleStatus[d["status"]])
 
     def to_json(self):
         d = {
@@ -110,9 +123,3 @@ WHERE
             for row in cursor.fetchall():
                 schedules.append(Schedule(row["teacher_id"], row["datetime"], ScheduleStatus(row["status"])))
             return schedules
-
-
-def diff_schedules(schedules1: List[Schedule], schedules2: List[Schedule]):
-    d = difflib.Differ()
-    diff = d.compare(schedules1, schedules2)
-    return diff
