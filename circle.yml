@@ -5,7 +5,8 @@ dependencies:
   pre:
     - echo "" > ~/.gitconfig
     - git config --global url."https://github.com".insteadOf git://github.com
+    - pip install -r requirements/base.txt
+    - pip install -r requirements/development.txt
 test:
   override:
-    - source virtualenvs/venv-3.5.0/bin/activate
     - py.test -v tests
