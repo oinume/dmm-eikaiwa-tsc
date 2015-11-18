@@ -7,4 +7,5 @@ dependencies:
     - git config --global url."https://github.com".insteadOf git://github.com
 test:
   override:
+    - source virtualenvs/venv-3.5.0/bin/activate
     - py.test -v tests
