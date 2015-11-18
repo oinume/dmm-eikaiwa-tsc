@@ -1,5 +1,7 @@
 import datetime
+import difflib
 import enum
+import json
 import os
 import pymysql
 import pymysql.cursors
@@ -24,7 +26,6 @@ def connect() -> pymysql.connections.Connection:
         cursorclass=pymysql.cursors.DictCursor)
 
 
-
 class Teacher:
 
     def __init__(self, id: int, name: str):
@@ -47,6 +48,38 @@ class Schedule:
 
     def __repr__(self) -> str:
         return "<Schedule({0}, {1}, {2})>".format(self.teacher_id, self.datetime, self.status.name)
+
+    def __eq__(self, other):
+        return str(self) == str(other)
+
+    @classmethod
+    def get_new_reservable_schedules(
+        cls, old_schedules: List[str], new_schedules: List[str]
+    ) -> List["Schedule"]:
+        differ = difflib.Differ()
+        ret = []
+        diffs = list(differ.compare(old_schedules, new_schedules))
+        for i, d in enumerate(diffs):
+            if d.startswith("+ "):
+                if i == len(diffs) - 1:
+                    ret.append(cls.from_json(d[1:]))
+                if i < len(diffs) - 1 and not diffs[i+1].startswith("? "):
+                    ret.append(cls.from_json(d[1:]))
+            print("line{}:{}".format(i, d))
+        return ret
+
+    @classmethod
+    def from_json(cls, json_str):
+        d = json.loads(json_str)
+        return cls(d["teacher_id"], d["datetime"], ScheduleStatus[d["status"]])
+
+    def to_json(self):
+        d = {
+            "teacher_id": self.teacher_id,
+            "datetime": self.datetime.strftime("%Y-%m-%d %H:%M:%S"),
+            "status": self.status.name
+        }
+        return json.dumps(d)
 
 
 class DBMapper:
