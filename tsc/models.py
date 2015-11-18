@@ -1,6 +1,7 @@
 import datetime
 import difflib
 import enum
+import json
 import os
 import pymysql
 import pymysql.cursors
@@ -36,7 +37,7 @@ class Teacher:
 
 
 ScheduleStatus = enum.Enum("ScheduleStatus", "reservable reserved finished")
-import json
+
 
 class Schedule:
 
@@ -48,17 +49,23 @@ class Schedule:
     def __repr__(self) -> str:
         return "<Schedule({0}, {1}, {2})>".format(self.teacher_id, self.datetime, self.status.name)
 
+    def __eq__(self, other):
+        return str(self) == str(other)
+
     @classmethod
     def get_new_reservable_schedules(
         cls, old_schedules: List[str], new_schedules: List[str]
     ) -> List["Schedule"]:
         differ = difflib.Differ()
         ret = []
-        for d in differ.compare(old_schedules, new_schedules):
-            if str(d).startswith("+ "):
-                # TODO: append only newly added
-                ret.append(cls.from_json(d[2:]))
-            print("line:", d)
+        diffs = list(differ.compare(old_schedules, new_schedules))
+        for i, d in enumerate(diffs):
+            if d.startswith("+ "):
+                if i == len(diffs) - 1:
+                    ret.append(cls.from_json(d[1:]))
+                if i < len(diffs) - 1 and not diffs[i+1].startswith("? "):
+                    ret.append(cls.from_json(d[1:]))
+            print("line{}:{}".format(i, d))
         return ret
 
     @classmethod
