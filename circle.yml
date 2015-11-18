@@ -1,0 +1,10 @@
+machine:
+  python:
+      version: 3.5.0
+dependencies:
+  pre:
+    - echo "" > ~/.gitconfig
+    - git config --global url."https://github.com".insteadOf git://github.com
+test:
+  override:
+    - py.test -v tests
