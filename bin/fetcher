@@ -51,8 +51,7 @@ if __name__ == "__main__":
             print("--- reservable_schedules ---")
             pprint(reservable_schedules)
 
-
-#db.update_schedules(new_schedules)
+            db.update_schedules(new_schedules)
     finally:
         fetcher.close()
         if conn:
