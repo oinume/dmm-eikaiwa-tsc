@@ -122,6 +122,7 @@ SELECT * FROM schedule
 WHERE
   teacher_id = %s
   AND DATE(datetime) BETWEEN %s AND %s
+ORDER BY datetime
 """.strip()
             cursor.execute(
                 sql,
