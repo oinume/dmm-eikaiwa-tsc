@@ -39,7 +39,8 @@ class TeacherScheduleFetcher:
             if time_class == "date":
                 match = re.match(r"([\d]+)月([\d]+)日(.+)", text)
                 if match:
-                    date = date.replace(date.year, int(match.group(1)), int(match.group(2)))
+                    original_date = date.replace(date.year, int(match.group(1)), int(match.group(2)))
+                    date = copy.copy(original_date)
             elif time_class.startswith("t-") and text != "":
                 tmp = time_class.split("-")
                 hour, minute = int(tmp[1]), int(tmp[2])
