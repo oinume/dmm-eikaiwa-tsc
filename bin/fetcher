@@ -2,8 +2,11 @@
 
 import datetime
 import os
+import pprint
+import sendgrid
 import sys
-from typing import List
+import xml.sax.saxutils
+#from typing import List
 
 
 # TODO: Make setup.py
@@ -32,6 +35,7 @@ if __name__ == "__main__":
     try:
         conn = connect()
         db = DBMapper(conn)
+        schedule_text = ""
         for teacher_id in teacher_ids:
             print("teacher_id = {}".format(teacher_id))
             teacher, new_schedules = fetcher.fetch(teacher_id)
@@ -42,16 +46,33 @@ if __name__ == "__main__":
             from_date = datetime.date.today()
             to_date = from_date + datetime.timedelta(days=6)
             old_schedules = db.find_schedules(teacher_id, from_date, to_date)  # type: List[Schedule]
-            from pprint import pprint
-            pprint(old_schedules)
+            pprint.pprint(old_schedules)
             print("---")
-            pprint(new_schedules)
+            pprint.pprint(new_schedules)
 
             reservable_schedules = Schedule.get_new_reservable_schedules(old_schedules, new_schedules)
             print("--- reservable_schedules ---")
-            pprint(reservable_schedules)
+            pprint.pprint(reservable_schedules)
+            if reservable_schedules:
+                # TODO: dict
+                schedule_text += "--- {0}({1}) schedule ---".format(teacher.name, teacher.id)
+                schedule_text += "\n"
+                schedule_text += pprint.pformat(reservable_schedules)
 
-            db.update_schedules(new_schedules)
+            # db.update_schedules(new_schedules)
+
+        # TODO: APIKEY
+        sendgrid_client = sendgrid.SendGridClient(
+            os.environ.get("SENDGRID_USERNAME"),
+            os.environ.get("SENDGRID_PASSWORD"),
+        )
+        mail = sendgrid.Mail()
+        mail.add_to("oinume@gmail.com")
+        mail.set_from("oinume@gmail.com")
+        mail.set_subject("DMM Eikaiwa teacher's schedule")
+        schedule_text = xml.sax.saxutils.escape(schedule_text)
+        mail.set_html(schedule_text.replace("\n", "<br>"))
+        sendgrid_client.send(mail)
     finally:
         fetcher.close()
         if conn:
