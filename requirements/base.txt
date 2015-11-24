@@ -10,3 +10,5 @@ Mako==1.0.2
 MarkupSafe==0.23
 SQLAlchemy==1.0.9
 alembic==0.8.3
+smtpapi==0.2.0
+sendgrid==1.5.17
