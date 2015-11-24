@@ -57,7 +57,7 @@ if __name__ == "__main__":
             pprint.pprint(reservable_schedules)
             teachers[teacher_id] = teacher
             schedules_per_teachers[teacher_id] = reservable_schedules
-            # db.update_schedules(new_schedules)
+            db.update_schedules(new_schedules)
         mail_text = ""
         for teacher_id in sorted(schedules_per_teachers):
             schedules = schedules_per_teachers[teacher_id]
@@ -65,6 +65,8 @@ if __name__ == "__main__":
                 mail_text += "--- {0} ({1}) schedule ---".format(teachers[teacher_id].name, teacher.id)
                 mail_text += "\n"
                 mail_text += pprint.pformat(schedules)
+                mail_text += "\n"
+                mail_text += "http://eikaiwa.dmm.com/teacher/index/{0}/".format(teacher_id)
         if mail_text:
             # TODO: APIKEY
             sendgrid_client = sendgrid.SendGridClient(
