@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import datetime
+import logging
 import os
 import pprint
 import sendgrid
@@ -8,6 +9,7 @@ import sys
 import xml.sax.saxutils
 #from typing import List
 
+logger = logging.getLogger("fetcher")
 
 # TODO: Make setup.py
 def set_lib_path(file):
@@ -39,22 +41,21 @@ if __name__ == "__main__":
         teachers = {}
         schedules_per_teachers = {}
         for teacher_id in teacher_ids:
-            print("teacher_id = {}".format(teacher_id))
+            logger.debug("--- teacher_id = {} ---".format(teacher_id))
             teacher, new_schedules = fetcher.fetch(teacher_id)
-            print("{teacher.name}".format(**locals()))
+            logger.debug("name = {}".format(teacher.name))
             db.update_teacher(teacher)
 
             # TODO: fetch db schedules and then compare
             from_date = datetime.date.today()
             to_date = from_date + datetime.timedelta(days=6)
             old_schedules = db.find_schedules(teacher_id, from_date, to_date)  # type: List[Schedule]
-            pprint.pprint(old_schedules)
-            print("---")
-            pprint.pprint(new_schedules)
+            logger.debug("old_schedules = " + pprint.pformat(old_schedules))
+            logger.debug("new_schedules = " + pprint.pformat(new_schedules))
 
             reservable_schedules = Schedule.get_new_reservable_schedules(old_schedules, new_schedules)
-            print("--- reservable_schedules ---")
-            pprint.pprint(reservable_schedules)
+            logger.debug("--- reservable_schedules ---")
+            logger.debug(pprint.pformat(reservable_schedules))
             teachers[teacher_id] = teacher
             schedules_per_teachers[teacher_id] = reservable_schedules
             db.update_schedules(new_schedules)
