@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-from os import environ as env
 from sys import argv
 
 import bottle
@@ -23,15 +22,8 @@ def index():
         if 'bottle.' in k:
             continue
         ret += '%s=%s\n' % (k, v)
-
     ret += "\n"
     ret += "Environment vars:\n"
-
-    for k, v in env.items():
-        if "bottle." in k:
-            continue
-        ret += "%s=%s\n" % (k, v)
-
     return ret
 
 
