@@ -62,11 +62,12 @@ if __name__ == "__main__":
         for teacher_id in sorted(schedules_per_teachers):
             schedules = schedules_per_teachers[teacher_id]
             if schedules:
-                mail_text += "--- {0} ({1}) schedule ---".format(teachers[teacher_id].name, teacher.id)
+                mail_text += "--- {0} ({1}) schedule ---".format(teachers[teacher_id].name, teacher_id)
+                mail_text += "\n"
+                mail_text += "http://eikaiwa.dmm.com/teacher/index/{0}/".format(teacher_id)
                 mail_text += "\n"
                 mail_text += pprint.pformat(schedules)
                 mail_text += "\n"
-                mail_text += "http://eikaiwa.dmm.com/teacher/index/{0}/".format(teacher_id)
         if mail_text:
             # TODO: APIKEY
             sendgrid_client = sendgrid.SendGridClient(
