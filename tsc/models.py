@@ -114,7 +114,7 @@ class DBMapper:
         self,
         teacher_id: int,
         from_date: datetime.date,
-        to_date:datetime.date
+        to_date: datetime.date
     ) -> List[Schedule]:
         with self._conn.cursor() as cursor:
             sql = """
@@ -126,7 +126,8 @@ ORDER BY datetime
 """.strip()
             cursor.execute(
                 sql,
-                (teacher_id, from_date.strftime("%Y-%m-%d"), to_date.strftime("%Y-%m-%d"))
+                (teacher_id, from_date.strftime("%Y-%m-%d"),
+                 (to_date + datetime.timedelta(days=1)).strftime("%Y-%m-%d"))
             )
             #print(cursor._last_executed)
 
