@@ -58,17 +58,22 @@ if __name__ == "__main__":
             teachers[teacher_id] = teacher
             schedules_per_teachers[teacher_id] = reservable_schedules
             db.update_schedules(new_schedules)
+
         mail_text = ""
         for teacher_id in sorted(schedules_per_teachers):
             schedules = schedules_per_teachers[teacher_id]
             if schedules:
-                mail_text += "--- {0} ({1}) schedule ---".format(teachers[teacher_id].name, teacher_id)
+                mail_text += "--- Teacher '{0}' reservable schedule ---\n".format(teachers[teacher_id].name)
+                mail_text += "PC: http://eikaiwa.dmm.com/teacher/index/{0}/\n".format(teacher_id)
+                mail_text += "Mobile: http://eikaiwa.dmm.com/teacher/schedule/{0}/\n".format(teacher_id)
                 mail_text += "\n"
-                mail_text += "http://eikaiwa.dmm.com/teacher/index/{0}/".format(teacher_id)
-                mail_text += "\n"
-                mail_text += pprint.pformat(schedules)
+                for s in schedules:
+                    mail_text += "  " + s.datetime
+                    mail_text += "\n"
                 mail_text += "\n"
         if mail_text:
+            #print("--- mail_text ---")
+            #print(mail_text)
             # TODO: APIKEY
             sendgrid_client = sendgrid.SendGridClient(
                 os.environ.get("SENDGRID_USERNAME"),
