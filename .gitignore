@@ -65,3 +65,7 @@ target/
 
 # Mac
 .DS_Store
+
+# direnv
+.envrc
+
