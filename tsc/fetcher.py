@@ -17,7 +17,9 @@ class TeacherScheduleFetcher:
     def fetch(self, teacher_id: int) -> Tuple[Teacher, List[Any]]:
         url_base = "http://eikaiwa.dmm.com/teacher/index/{0}/"
         url = url_base.format(teacher_id)
-        res = self._session.get(url, timeout=5)
+        res = self._session.get(url, timeout=5, headers={
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_5) AppleWebKit/601.2.7 (KHTML, like Gecko) Version/9.0.1 Safari/601.2.7",
+        })
         if res.status_code != 200:
             raise(Exception("fetch error: url={0}, status={1}".format(url, res.status_code)))
 
