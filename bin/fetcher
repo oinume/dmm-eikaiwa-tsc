@@ -33,6 +33,10 @@ def create_argument_parser():
         conflict_handler="resolve"
     )
     p.add_argument(
+        "-d", "--dry-run", action="store_true", default=None,
+        help="Do not update database.",
+    )
+    p.add_argument(
         "-l", "--log-level", metavar="LEVEL",
         help="Log level (Default: info)",
     )
@@ -76,7 +80,8 @@ if __name__ == "__main__":
             logger.debug(pprint.pformat(reservable_schedules))
             teachers[teacher_id] = teacher
             schedules_per_teachers[teacher_id] = reservable_schedules
-            db.update_schedules(new_schedules)
+            if not options_dict.get("dry_run"):
+                db.update_schedules(new_schedules)
 
         mail_text = ""
         for teacher_id in sorted(schedules_per_teachers):
