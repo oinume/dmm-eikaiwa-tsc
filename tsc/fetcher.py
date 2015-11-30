@@ -6,6 +6,7 @@ import re
 import requests
 from typing import Any, List, Tuple
 
+from tsc.log import logger
 from tsc.models import Schedule, ScheduleStatus, Teacher
 
 
@@ -15,6 +16,7 @@ class TeacherScheduleFetcher:
         self._session.mount("http://", requests.adapters.HTTPAdapter(max_retries=3))
 
     def fetch(self, teacher_id: int) -> Tuple[Teacher, List[Any]]:
+        logger.debug("Getting teacher_id={0} schedules from eikaiwa.dmm.com".format(teacher_id))
         url_base = "http://eikaiwa.dmm.com/teacher/index/{0}/"
         url = url_base.format(teacher_id)
         res = self._session.get(url, timeout=5, headers={
@@ -33,6 +35,7 @@ class TeacherScheduleFetcher:
         date = copy.copy(original_date)
         time_items = root.xpath("//ul[@class='oneday']//li")
         schedules = []
+        logger.debug("--- teacher id={0}, name={1} ---".format(teacher_id, name))
         for time_item in time_items:
             time_class = time_item.attrib["class"]
             text = time_item.text_content().strip()
@@ -61,7 +64,8 @@ class TeacherScheduleFetcher:
                     status = "reservable"
                 else:
                     raise(Exception("Unknown schedule text:{0}".format(text)))
-                print("{dt}:{status}".format(**locals()))
+
+                logger.debug("dt={dt}, status={status}".format(**locals()))
                 schedule = Schedule(teacher.id, dt, ScheduleStatus[status])
                 schedules.append(schedule)
             else:

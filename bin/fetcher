@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import argparse
 import datetime
 import os
 import pprint
@@ -22,6 +23,21 @@ def set_lib_path(file):
 parent_dir, bin_dir = set_lib_path(__file__)
 import tsc.fetcher
 from tsc.models import connect, DBMapper, Schedule
+import tsc.log
+
+
+def create_argument_parser():
+    p = argparse.ArgumentParser(
+        prog=os.path.basename(__file__),
+        description="Teacher schedule fetcher.",
+        conflict_handler="resolve"
+    )
+    p.add_argument(
+        "-l", "--log-level", metavar="LEVEL",
+        help="Log level (Default: info)",
+    )
+    return p
+
 
 if __name__ == "__main__":
     teacher_ids_str = os.environ.get("TEACHER_IDS")
@@ -31,6 +47,11 @@ if __name__ == "__main__":
     if not teacher_ids:
         print("TEACHER_IDS is empty, exiting.", file=sys.stderr)
         sys.exit(1)
+    arg_parser = create_argument_parser()
+    options = arg_parser.parse_args(sys.argv[1:])
+    options_dict = options.__dict__
+    logger = tsc.log.initialize(options_dict.get("log_level"))
+
     fetcher = tsc.fetcher.TeacherScheduleFetcher()
     try:
         conn = connect()
@@ -39,22 +60,20 @@ if __name__ == "__main__":
         teachers = {}
         schedules_per_teachers = {}
         for teacher_id in teacher_ids:
-            print("teacher_id = {}".format(teacher_id))
+            logger.debug("--- teacher_id = {} ---".format(teacher_id))
             teacher, new_schedules = fetcher.fetch(teacher_id)
-            print("{teacher.name}".format(**locals()))
+            logger.debug("name = {}".format(teacher.name))
             db.update_teacher(teacher)
 
-            # TODO: fetch db schedules and then compare
             from_date = datetime.date.today()
             to_date = from_date + datetime.timedelta(days=6)
             old_schedules = db.find_schedules(teacher_id, from_date, to_date)  # type: List[Schedule]
-            pprint.pprint(old_schedules)
-            print("---")
-            pprint.pprint(new_schedules)
+            logger.debug("old_schedules = " + pprint.pformat(old_schedules))
+            logger.debug("new_schedules = " + pprint.pformat(new_schedules))
 
             reservable_schedules = Schedule.get_new_reservable_schedules(old_schedules, new_schedules)
-            print("--- reservable_schedules ---")
-            pprint.pprint(reservable_schedules)
+            logger.debug("--- reservable_schedules ---")
+            logger.debug(pprint.pformat(reservable_schedules))
             teachers[teacher_id] = teacher
             schedules_per_teachers[teacher_id] = reservable_schedules
             db.update_schedules(new_schedules)
@@ -94,3 +113,4 @@ if __name__ == "__main__":
         fetcher.close()
         if conn:
             conn.close()
+
