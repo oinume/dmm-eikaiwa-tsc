@@ -8,5 +8,25 @@
         "cleardb:ignite",
         "scheduler:standard",
         "sendgrid:starter"
-    ]
+    ],
+    "env": {
+        "CLEARDB_DATABASE_URL": {
+            "description": "Database URL"
+        },
+        "SENDGRID_PASSWORD": {
+            "description": "SendGrid password"
+        },
+        "SENDGRID_USERNAME": {
+            "description": "SendGrid username"
+        },
+        "TEACHER_IDS": {
+            "description": "IDs of teachers you want to check. (Accepting multiple value with comma)"
+        },
+        "NOTIFICATION_EMAILS": {
+            "description": "Email addresses to notify. (Accepting multiple value with comma)"
+        }
+    },
+    "scripts": {
+        "postdeploy": "alembic upgrade head"
+    }
 }
