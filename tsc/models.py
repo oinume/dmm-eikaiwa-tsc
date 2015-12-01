@@ -12,6 +12,7 @@ urllib.parse.uses_netloc.append("mysql")
 
 
 def connect() -> pymysql.connections.Connection:
+    # TODO: pass this from argument
     url_env = os.environ.get("CLEARDB_DATABASE_URL")
     if not url_env:
         raise Exception("Environment 'CLEARDB_DATABASE_URL' is not defined.")
@@ -127,7 +128,7 @@ ORDER BY datetime
             cursor.execute(
                 sql,
                 (teacher_id, from_date.strftime("%Y-%m-%d"),
-                 (to_date + datetime.timedelta(days=1)).strftime("%Y-%m-%d"))
+                 (to_date + datetime.timedelta(days=2)).strftime("%Y-%m-%d"))
             )
             #print(cursor._last_executed)
 
