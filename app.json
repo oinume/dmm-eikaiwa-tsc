@@ -1,0 +1,12 @@
+{
+    "name": "dmm-eikaiwa-tsc",
+    "description": "Teacher Schedule Checker for DMM Eikaiwa",
+    "repository": "https://github.com/oinume/dmm-eikaiwa-tsc",
+    "keywords": ["DMM Eikaiwa", "python"],
+    "success_url": "/",
+    "addons": [
+        "cleardb:ignite",
+        "scheduler:standard",
+        "sendgrid:starter"
+    ]
+}
