@@ -52,9 +52,14 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
-    if os.environ.get('SQLALCHEMY_DATABASE_URI'):
-        config.set_main_option("sqlalchemy.url", os.environ.get('SQLALCHEMY_DATABASE_URI'))
-        #config['sqlalchemy.url'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
+    for name in ["CLEARDB_DATABASE_URL", "SQLALCHEMY_DATABASE_URI"]:
+        if os.environ.get(name):
+            if name.startswith("mysql://"):
+                config.set_main_option(
+                    "sqlalchemy.url",
+                    os.environ.get(name.replace("mysql://", "mysql+pymysql://")))
+            else:
+                config.set_main_option("sqlalchemy.url", os.environ.get(name))
 
     connectable = engine_from_config(
         config.get_section(config.config_ini_section),
