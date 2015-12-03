@@ -1,10 +1,9 @@
 requests==2.8.1
-requests-futures=0.9.5
+requests-futures==0.9.5
 lxml==3.4.4
 cssselect==0.9.1
-pyquery==1.2.9
-gunicorn==19.3.0
-bottle==0.12.8
+gunicorn==19.4.1
+bottle==0.12.9
 PyMySQL==0.6.7
 python-editor==0.4
 Mako==1.0.2
