@@ -1,4 +1,5 @@
-requests==2.8.0
+requests==2.8.1
+requests-futures=0.9.5
 lxml==3.4.4
 cssselect==0.9.1
 pyquery==1.2.9

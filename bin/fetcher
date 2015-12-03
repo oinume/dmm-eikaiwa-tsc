@@ -57,6 +57,7 @@ if __name__ == "__main__":
     logger = tsc.log.initialize(options_dict.get("log_level"))
 
     fetcher = tsc.fetcher.TeacherScheduleFetcher()
+    tracker = tsc.tracker.Tracker(os.environ.get("APP_ID"))
     try:
         conn = connect()
         db = DBMapper(conn)
@@ -82,6 +83,7 @@ if __name__ == "__main__":
             schedules_per_teachers[teacher_id] = reservable_schedules
             if not options_dict.get("dry_run"):
                 db.update_schedules(new_schedules)
+            tracker.send(teacher_id)
 
         mail_text = ""
         for teacher_id in sorted(schedules_per_teachers):
