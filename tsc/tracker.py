@@ -1,4 +1,4 @@
-import requests
+from requests_futures.sessions import FuturesSession
 from tsc.models import Teacher
 
 
@@ -6,11 +6,9 @@ class Tracker:
 
     def __init__(self, app_id: str):
         self._app_id = app_id
-        self._session = requests.Session()
+        self._session = FuturesSession()
 
-    def send(self, teacher: Teacher):
-        if not self._app_id:
-            return
+    def send_async(self, teacher: Teacher):
         payload = {
             "v": 1,
             "tid": "UA-2241989-17",
@@ -20,7 +18,7 @@ class Tracker:
             "dp": teacher.id,
             "dt": teacher.name,
         }
-        res = self._session.post("http://www.google-analytics.com/collect", payload)
+        return self._session.post("http://www.google-analytics.com/collect", payload)
 
     def close(self):
         self._session.close()

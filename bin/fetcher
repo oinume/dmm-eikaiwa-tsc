@@ -60,13 +60,17 @@ if __name__ == "__main__":
     logger = tsc.log.initialize(options_dict.get("log_level"))
 
     fetcher = TeacherScheduleFetcher()  # TeacherScheduleFetcher
-    tracker = Tracker(os.environ.get("APP_ID"))  # Tracker
+    app_id = os.environ.get("APP_ID")
+    if not app_id:
+        raise (EnvironmentError("Env 'APP_ID' is not defined."))
+    tracker = Tracker(app_id)  # Tracker
     try:
         conn = connect()
         db = DBMapper(conn)
         schedule_text = ""
         teachers = {}
         schedules_per_teachers = {}
+        tracker_futures = []
         for teacher_id in teacher_ids:
             logger.debug("--- teacher_id = {} ---".format(teacher_id))
             teacher, new_schedules = fetcher.fetch(teacher_id)
@@ -86,7 +90,7 @@ if __name__ == "__main__":
             schedules_per_teachers[teacher_id] = reservable_schedules
             if not options_dict.get("dry_run"):
                 db.update_schedules(new_schedules)
-            tracker.send(teacher)
+            tracker_futures.append(tracker.send_async(teacher))
 
         mail_text = ""
         for teacher_id in sorted(schedules_per_teachers):
@@ -119,6 +123,9 @@ if __name__ == "__main__":
                 mail_text = xml.sax.saxutils.escape(mail_text)
                 mail.set_html(mail_text.replace("\n", "<br>"))
                 sendgrid_client.send(mail)
+
+        for future in tracker_futures:
+            logger.debug("tracker result = {}".format(future.result()))
     finally:
         fetcher.close()
         tracker.close()
