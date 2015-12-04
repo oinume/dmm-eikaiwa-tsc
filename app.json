@@ -17,6 +17,10 @@
         "NOTIFICATION_EMAILS": {
             "description": "Email addresses to notify. (Accepting multiple value with comma)",
             "required": false
+        },
+        "APP_ID": {
+            "description": "An application ID for tracking",
+            "generator": "secret"
         }
     },
     "scripts": {
