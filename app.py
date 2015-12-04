@@ -23,7 +23,6 @@ def index():
             cursor.fetchone()
         return {
             "APP_ID": os.environ.get("APP_ID"),
-            "TEACHER_IDS": os.environ.get("TEACHER_IDS"),
             "db": "true",
         }
     finally:
