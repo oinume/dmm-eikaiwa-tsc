@@ -1,18 +1,26 @@
 import requests
+from tsc.models import Teacher
+
 
 class Tracker:
 
     def __init__(self, app_id: str):
-        self.app_id = app_id
+        self._app_id = app_id
+        self._session = requests.Session()
 
-    def send(self, teacher_id):
-        session = requests.Session()
-        data = {
-            
+    def send(self, teacher: Teacher):
+        if not self._app_id:
+            return
+        payload = {
+            "v": 1,
+            "tid": "UA-2241989-17",
+            "cid": 555,
+            "t": "pageview",
+            "dh": self._app_id,
+            "dp": teacher.id,
+            "dt": teacher.name,
         }
-        session.post(
-            "http://www.google-analytics.com/collect",
-            {
+        res = self._session.post("http://www.google-analytics.com/collect", payload)
 
-            }
-        )
+    def close(self):
+        self._session.close()
