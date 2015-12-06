@@ -16,7 +16,7 @@ And then, input following.
 
 Finally, click "Heroku Scheduler" link and click "Add new job" button. Next, type "bin/fetcher -l debug" and then click "Save" as following.
 
-
+![Heroku Scheduler setting](/../master/doc/heroku_scheduler.png?raw=true "Heroku Scheduler setting")
 
 That's all for now, you'll receive emails of reserverble lesson schedules of your favorite teachers.
 
