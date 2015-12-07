@@ -1,15 +1,15 @@
 #!/usr/bin/env python
+# coding: utf-8
 
 import argparse
 import datetime
 import os
 import pprint
-import sendgrid
 import sys
-import xml.sax.saxutils
 #from typing import List
 
 from tsc.fetcher import TeacherScheduleFetcher
+from tsc.mailer import Mailer
 from tsc.tracker import Tracker
 
 
@@ -93,10 +93,13 @@ if __name__ == "__main__":
             tracker_futures.append(tracker.send_async(teacher))
 
         mail_text = ""
+        teacher_name_text = ""
         for teacher_id in sorted(schedules_per_teachers):
             schedules = schedules_per_teachers[teacher_id]
             if schedules:
-                mail_text += "--- Teacher '{0}' reservable schedule ---\n".format(teachers[teacher_id].name)
+                teacher_name = teachers[teacher_id].name
+                teacher_name_text += teacher_name + ", "
+                mail_text += "--- Teacher '{0}' reservable schedule ---\n".format(teacher_name)
                 mail_text += "PC: http://eikaiwa.dmm.com/teacher/index/{0}/\n".format(teacher_id)
                 mail_text += "Mobile: http://eikaiwa.dmm.com/teacher/schedule/{0}/\n".format(teacher_id)
                 mail_text += "\n"
@@ -104,26 +107,25 @@ if __name__ == "__main__":
                     mail_text += "  " + s.datetime
                     mail_text += "\n"
                 mail_text += "\n"
+        teacher_name_text = teacher_name_text[:-2]
         if mail_text:
             #print("--- mail_text ---")
             #print(mail_text)
             notification_emails = os.environ.get("NOTIFICATION_EMAILS")
             if not notification_emails:
                 raise (EnvironmentError("Env 'NOTIFICATION_EMAILS' is not defined."))
+            logger.debug("Sending email to {0}".format(notification_emails))
             # TODO: APIKEY
-            sendgrid_client = sendgrid.SendGridClient(
+            mailer = Mailer(  # Mailer
                 os.environ.get("SENDGRID_USERNAME"),
                 os.environ.get("SENDGRID_PASSWORD"),
             )
-            for email in notification_emails.split(","):
-                mail = sendgrid.Mail()
-                mail.add_to(email)
-                mail.set_from("noreply@lampetty.net")
-                mail.set_subject("New teacher's reservable schedule")
-                mail_text = xml.sax.saxutils.escape(mail_text)
-                mail.set_html(mail_text.replace("\n", "<br>"))
-                sendgrid_client.send(mail)
-
+            mailer.send_multi(
+                from_address="noreply@lampetty.net",
+                to_addresses=notification_emails.split(","),
+                subject="[DMMEikaiwa] Reservable schedules of Teacher {0}".format(teacher_name_text),
+                body=mail_text,
+            )
         for future in tracker_futures:
             logger.debug("tracker result = {}".format(future.result()))
     finally:
