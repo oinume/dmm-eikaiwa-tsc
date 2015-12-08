@@ -3,9 +3,9 @@
 
 import os
 from sys import argv
-
 import bottle
 from bottle import default_app, request, route, response, get
+from tsc.models import connect
 
 bottle.debug(True)
 application = bottle.default_app()
@@ -15,16 +15,19 @@ if __name__ == "__main__":
 
 @get("/")
 def index():
-    response.content_type = "text/plain; charset=utf-8"
-    ret = "Hello world, I'm %s!\n\n" % os.getpid()
-    ret += "Request vars:\n"
-    for k, v in request.environ.items():
-        if 'bottle.' in k:
-            continue
-        ret += '%s=%s\n' % (k, v)
-    ret += "\n"
-    ret += "Environment vars:\n"
-    return ret
+    response.content_type = "application/json; charset=utf-8"
+    try:
+        conn = connect()
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT COUNT(*) FROM teacher")
+            cursor.fetchone()
+        return {
+            "APP_ID": os.environ.get("APP_ID"),
+            "db": "true",
+        }
+    finally:
+        if conn:
+            conn.close()
 
 
 @get("/db")
