@@ -1,3 +1,5 @@
+[![CircleCI status](https://img.shields.io/circleci/project/oinume/dmm-eikaiwa-tsc.svg)](https://circleci.com/gh/oinume/dmm-eikaiwa-tsc)
+
 # dmm-eikaiwa-tsc
 
 Teacher Schedule Checker for DMM Eikaiwa. This application sends emails to you when  reservable lessons of your favorite teachers are available.
