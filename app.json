@@ -6,6 +6,7 @@
     "success_url": "/",
     "addons": [
         "cleardb:ignite",
+        "papertrail:choklad",
         "scheduler:standard",
         "sendgrid:starter"
     ],
