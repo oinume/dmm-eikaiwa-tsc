@@ -6,11 +6,13 @@ from typing import List
 
 
 class Mailer:
+    def __init__(self, sendgrid_username: str, sendgrid_password: str = None) -> None:
+        self.client = sendgrid.SendGridClient(
+            sendgrid_username,
+            sendgrid_password,
+            raise_errors=True)
 
-    def __init__(self, sendgrid_username: str, sendgrid_password: str=None):
-        self.client = sendgrid.SendGridClient(sendgrid_username, sendgrid_password)
-
-    def send(self, from_address: str, to_address: str, subject: str, body: str):
+    def send(self, from_address: str, to_address: str, subject: str, body: str) -> None:
         mail = sendgrid.Mail()
         mail.set_from(from_address)
         mail.add_to(to_address)
@@ -19,6 +21,6 @@ class Mailer:
         mail.set_html(body_text.replace("\n", "<br>"))
         self.client.send(mail)
 
-    def send_multi(self, from_address: str, to_addresses: List[str], subject: str, body: str):
+    def send_multi(self, from_address: str, to_addresses: List[str], subject: str, body: str) -> None:
         for to in to_addresses:
             self.send(from_address, to, subject, body)

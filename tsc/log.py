@@ -4,7 +4,7 @@ logging.getLogger("requests").setLevel(logging.WARNING)
 logger = logging.getLogger()
 
 
-def initialize(level: str=None):
+def initialize(level: str=None) -> logging.Logger:
     global logger
     if level:
         level = logging.getLevelName(level.upper())
