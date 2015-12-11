@@ -16,8 +16,9 @@ if __name__ == "__main__":
 @get("/")
 def index():
     response.content_type = "application/json; charset=utf-8"
+    conn = None
     try:
-        conn = DB.connect(os.environ.get(["CLEARDB_DATABASE_URL"]))
+        conn = DB.connect(os.environ.get("CLEARDB_DATABASE_URL"))
         with conn.cursor() as cursor:
             cursor.execute("SELECT COUNT(*) FROM teacher")
             cursor.fetchone()
