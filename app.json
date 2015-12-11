@@ -8,7 +8,8 @@
         "cleardb:ignite",
         "papertrail:choklad",
         "scheduler:standard",
-        "sendgrid:starter"
+        "sendgrid:starter",
+        "deadmanssnitch:the-lone-snitch"
     ],
     "env": {
         "TEACHER_IDS": {
