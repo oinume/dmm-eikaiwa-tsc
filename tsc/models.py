@@ -76,12 +76,8 @@ class DB:
         self._conn = conn
 
     @classmethod
-    def connect(cls) -> pymysql.connections.Connection:
-        # TODO: pass this from argument
-        url_env = os.environ.get("CLEARDB_DATABASE_URL")
-        if not url_env:
-            raise EnvironmentError("Environment 'CLEARDB_DATABASE_URL' is not defined.")
-        url = urllib.parse.urlparse(url_env)
+    def connect(cls, database_url: str) -> pymysql.connections.Connection:
+        url = urllib.parse.urlparse(database_url)
         return pymysql.connect(
             host=url.hostname,
             user=url.username,

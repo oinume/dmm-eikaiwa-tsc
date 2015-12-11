@@ -33,10 +33,14 @@ def create_argument_parser() -> argparse.ArgumentParser:
 
 
 if __name__ == "__main__":
-    teacher_ids_str = os.environ.get("TEACHER_IDS")
-    if not teacher_ids_str:
-        raise(EnvironmentError("Env 'TEACHER_IDS' is not defined."))
-    teacher_ids = teacher_ids_str.split(",")
+    envs = {}
+    for env_name in ("APP_ID", "CLEARDB_DATABASE_URL", "TEACHER_IDS"):
+        env_value = os.environ.get(env_name)
+        if not env_value:
+            raise EnvironmentError("Environment '{0}' is not defined.".format(env_name))
+        envs[env_name] = env_value
+
+    teacher_ids = envs["TEACHER_IDS"].split(",")
     if not teacher_ids:
         print("TEACHER_IDS is empty, exiting.", file=sys.stderr)
         sys.exit(1)
@@ -44,14 +48,10 @@ if __name__ == "__main__":
     options = arg_parser.parse_args(sys.argv[1:])
     options_dict = options.__dict__  # type: Dict
     logger = tsc.log.initialize(options_dict.get("log_level"))
-
     fetcher = TeacherScheduleFetcher()  # type: TeacherScheduleFetcher
-    app_id = os.environ.get("APP_ID")
-    if not app_id:
-        raise (EnvironmentError("Env 'APP_ID' is not defined."))
-    tracker = Tracker(app_id)  # Tracker
+    tracker = Tracker(envs["APP_ID"])  # Tracker
     try:
-        conn = DB.connect()
+        conn = DB.connect(envs["CLEARDB_DATABASE_URL"])
         db = DB(conn)
         schedule_text = ""
         teachers = {}
@@ -78,6 +78,7 @@ if __name__ == "__main__":
                 db.update_schedules(new_schedules)
             tracker_futures.append(tracker.send_async(teacher))
 
+        # TODO: Use template engine
         mail_text = ""
         teacher_name_text = ""
         for teacher_id in sorted(schedules_per_teachers):
@@ -101,7 +102,6 @@ if __name__ == "__main__":
             if not notification_emails:
                 raise (EnvironmentError("Env 'NOTIFICATION_EMAILS' is not defined."))
             logger.debug("Sending email to {0}".format(notification_emails))
-            # TODO: APIKEY
             mailer = Mailer(  # Mailer
                 os.environ.get("SENDGRID_USERNAME"),
                 os.environ.get("SENDGRID_PASSWORD"),
