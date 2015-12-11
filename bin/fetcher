@@ -6,7 +6,7 @@ import datetime
 import os
 import pprint
 import sys
-#from typing import List
+from typing import Dict, List
 
 from tsc.fetcher import TeacherScheduleFetcher
 from tsc.mailer import Mailer
@@ -29,7 +29,7 @@ from tsc.models import connect, DBMapper, Schedule
 import tsc.log
 
 
-def create_argument_parser():
+def create_argument_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
         prog=os.path.basename(__file__),
         description="Teacher schedule fetcher.",
@@ -56,10 +56,10 @@ if __name__ == "__main__":
         sys.exit(1)
     arg_parser = create_argument_parser()
     options = arg_parser.parse_args(sys.argv[1:])
-    options_dict = options.__dict__
+    options_dict = options.__dict__  # type: Dict
     logger = tsc.log.initialize(options_dict.get("log_level"))
 
-    fetcher = TeacherScheduleFetcher()  # TeacherScheduleFetcher
+    fetcher = TeacherScheduleFetcher()  # type: TeacherScheduleFetcher
     app_id = os.environ.get("APP_ID")
     if not app_id:
         raise (EnvironmentError("Env 'APP_ID' is not defined."))

@@ -13,6 +13,7 @@ urllib.parse.uses_netloc.append("mysql")
 
 def connect() -> pymysql.connections.Connection:
     # TODO: pass this from argument
+    # TODO: Move to DBMapper
     url_env = os.environ.get("CLEARDB_DATABASE_URL")
     if not url_env:
         raise Exception("Environment 'CLEARDB_DATABASE_URL' is not defined.")
@@ -29,7 +30,7 @@ def connect() -> pymysql.connections.Connection:
 
 class Teacher:
 
-    def __init__(self, id: int, name: str):
+    def __init__(self, id: int, name: str) -> None:
         self.id = id
         self.name = name
 
@@ -42,7 +43,7 @@ ScheduleStatus = enum.Enum("ScheduleStatus", "reservable reserved finished")
 
 class Schedule:
 
-    def __init__(self, teacher_id: int, dt: datetime.datetime, status: ScheduleStatus):
+    def __init__(self, teacher_id: int, dt: datetime.datetime, status: ScheduleStatus) -> None:
         self.teacher_id = teacher_id
         self.datetime = dt
         self.status = status
@@ -50,7 +51,7 @@ class Schedule:
     def __repr__(self) -> str:
         return "<Schedule({0}, {1}, {2})>".format(self.teacher_id, self.datetime, self.status.name)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return str(self) == str(other)
 
     @classmethod
@@ -73,11 +74,11 @@ class Schedule:
         return ret
 
     @classmethod
-    def from_json(cls, json_str):
+    def from_json(cls, json_str) -> "Schedule":
         d = json.loads(json_str)
         return cls(d["teacher_id"], d["datetime"], ScheduleStatus[d["status"]])
 
-    def to_json(self):
+    def to_json(self) -> str:
         d = {
             "teacher_id": self.teacher_id,
             "datetime": self.datetime.strftime("%Y-%m-%d %H:%M:%S"),
@@ -86,19 +87,19 @@ class Schedule:
         return json.dumps(d)
 
 
-class DBMapper:
+class DBMapper:  # TODO: DBMapper -> DB
 
     def __init__(self, conn):
         self._conn = conn
 
-    def update_teacher(self, teacher: Teacher):
+    def update_teacher(self, teacher: Teacher) -> None:
         with self._conn.cursor() as cursor:
             cursor.execute(
                 "INSERT INTO teacher VALUES (%s, %s) ON DUPLICATE KEY UPDATE name=%s",
                 (teacher.id, teacher.name, teacher.name,)
             )
 
-    def update_schedules(self, schedules: List[Schedule]):
+    def update_schedules(self, schedules: List[Schedule]) -> None:
         if not schedules:
             return
         with self._conn.cursor() as cursor:
