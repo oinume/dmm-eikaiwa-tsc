@@ -9,24 +9,10 @@ import sys
 from typing import Dict, List
 
 from tsc.fetcher import TeacherScheduleFetcher
-from tsc.mailer import Mailer
-from tsc.tracker import Tracker
-
-
-# TODO: Make setup.py
-def set_lib_path(file):
-    parent, bin = os.path.split(os.path.dirname(os.path.abspath(file)))
-    for dir in ('lib', ''):
-        path = os.path.join(parent, dir)
-        if os.path.exists(path):
-            sys.path.insert(0, path)
-    return parent, bin
-
-
-parent_dir, bin_dir = set_lib_path(__file__)
-import tsc.fetcher
-from tsc.models import connect, DBMapper, Schedule
 import tsc.log
+from tsc.mailer import Mailer
+from tsc.models import connect, DBMapper, Schedule
+from tsc.tracker import Tracker
 
 
 def create_argument_parser() -> argparse.ArgumentParser:
