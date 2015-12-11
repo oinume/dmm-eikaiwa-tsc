@@ -11,23 +11,6 @@ import urllib.parse
 urllib.parse.uses_netloc.append("mysql")
 
 
-def connect() -> pymysql.connections.Connection:
-    # TODO: pass this from argument
-    # TODO: Move to DBMapper
-    url_env = os.environ.get("CLEARDB_DATABASE_URL")
-    if not url_env:
-        raise Exception("Environment 'CLEARDB_DATABASE_URL' is not defined.")
-    url = urllib.parse.urlparse(url_env)
-    return pymysql.connect(
-        host=url.hostname,
-        user=url.username,
-        password=url.password,
-        database=url.path[1:],
-        charset="utf8mb4",
-        autocommit=True,
-        cursorclass=pymysql.cursors.DictCursor)
-
-
 class Teacher:
 
     def __init__(self, id: int, name: str) -> None:
@@ -87,10 +70,26 @@ class Schedule:
         return json.dumps(d)
 
 
-class DBMapper:  # TODO: DBMapper -> DB
+class DB:
 
     def __init__(self, conn):
         self._conn = conn
+
+    @classmethod
+    def connect(cls) -> pymysql.connections.Connection:
+        # TODO: pass this from argument
+        url_env = os.environ.get("CLEARDB_DATABASE_URL")
+        if not url_env:
+            raise EnvironmentError("Environment 'CLEARDB_DATABASE_URL' is not defined.")
+        url = urllib.parse.urlparse(url_env)
+        return pymysql.connect(
+            host=url.hostname,
+            user=url.username,
+            password=url.password,
+            database=url.path[1:],
+            charset="utf8mb4",
+            autocommit=True,
+            cursorclass=pymysql.cursors.DictCursor)
 
     def update_teacher(self, teacher: Teacher) -> None:
         with self._conn.cursor() as cursor:

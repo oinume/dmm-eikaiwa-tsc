@@ -11,7 +11,7 @@ from typing import Dict, List
 from tsc.fetcher import TeacherScheduleFetcher
 import tsc.log
 from tsc.mailer import Mailer
-from tsc.models import connect, DBMapper, Schedule
+from tsc.models import DB, Schedule
 from tsc.tracker import Tracker
 
 
@@ -51,8 +51,8 @@ if __name__ == "__main__":
         raise (EnvironmentError("Env 'APP_ID' is not defined."))
     tracker = Tracker(app_id)  # Tracker
     try:
-        conn = connect()
-        db = DBMapper(conn)
+        conn = DB.connect()
+        db = DB(conn)
         schedule_text = ""
         teachers = {}
         schedules_per_teachers = {}
