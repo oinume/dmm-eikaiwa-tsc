@@ -16,7 +16,7 @@ And then, input following.
 * TEACHER_IDS - Teacher's IDs what you want to follow
 * NOTIFICATION_EMAILS - Email addresses for notification
 
-Finally, click "Heroku Scheduler" link and click "Add new job" button. Next, type "bin/fetcher -l debug" and then click "Save" as following.
+Finally, click `Heroku Scheduler` link and click `Add new job` button. Next, type `bin/fetcher -l debug` and then click `Save` as follows.
 
 ![Heroku Scheduler setting](/../master/doc/heroku_scheduler.png?raw=true "Heroku Scheduler setting")
 
