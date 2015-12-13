@@ -37,12 +37,12 @@ if __name__ == "__main__":
     for env_name in ("APP_ID", "CLEARDB_DATABASE_URL", "TEACHER_IDS"):
         env_value = os.environ.get(env_name)
         if not env_value:
-            raise EnvironmentError("Environment '{0}' is not defined.".format(env_name))
+            raise EnvironmentError("[error] Environment '{0}' is not defined.".format(env_name))
         envs[env_name] = env_value
 
     teacher_ids = envs["TEACHER_IDS"].split(",")
     if not teacher_ids:
-        print("TEACHER_IDS is empty, exiting.", file=sys.stderr)
+        print("[error] TEACHER_IDS is empty, exiting.", file=sys.stderr)
         sys.exit(1)
     arg_parser = create_argument_parser()
     options = arg_parser.parse_args(sys.argv[1:])
@@ -109,7 +109,7 @@ if __name__ == "__main__":
             mailer.send_multi(
                 from_address="noreply@lampetty.net",
                 to_addresses=notification_emails.split(","),
-                subject="[DMMEikaiwa] Reservable schedules of Teacher {0}".format(teacher_name_text),
+                subject="[DMMEikaiwa] Schedules of teacher {0}".format(teacher_name_text),
                 body=mail_text,
             )
         for future in tracker_futures:
