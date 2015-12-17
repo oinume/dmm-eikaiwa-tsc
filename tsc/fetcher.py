@@ -58,7 +58,7 @@ class TeacherScheduleFetcher:
                 dt = datetime.datetime(date.year, date.month, date.day, hour, minute, 0, 0)
                 if text == "終了":
                     status = "finished"
-                elif text == "予約済":
+                elif text == "予約済" or "休講":  # TODO: Add this status to enum
                     status = "reserved"
                 elif text == "予約可":
                     status = "reservable"
