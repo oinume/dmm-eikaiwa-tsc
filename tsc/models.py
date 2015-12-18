@@ -18,7 +18,7 @@ class Teacher:
         self.name = name
 
     def __repr__(self) -> str:
-        return "<Teacher({0}, {1})>".format(self.id, self.name)
+        return "<Teacher({}, {})>".format(self.id, self.name)
 
 
 ScheduleStatus = enum.Enum("ScheduleStatus", "reservable reserved finished")
@@ -32,7 +32,7 @@ class Schedule:
         self.status = status
 
     def __repr__(self) -> str:
-        return "<Schedule({0}, {1}, {2})>".format(self.teacher_id, self.datetime, self.status.name)
+        return "<Schedule({}, {}, {})>".format(self.teacher_id, self.datetime, self.status.name)
 
     def __eq__(self, other) -> bool:
         return str(self) == str(other)

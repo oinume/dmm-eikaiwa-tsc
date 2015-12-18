@@ -37,7 +37,7 @@ if __name__ == "__main__":
     for env_name in ("APP_ID", "CLEARDB_DATABASE_URL", "TEACHER_IDS"):
         env_value = os.environ.get(env_name)
         if not env_value:
-            raise EnvironmentError("[error] Environment '{0}' is not defined.".format(env_name))
+            raise EnvironmentError("[error] Environment '{}' is not defined.".format(env_name))
         envs[env_name] = env_value
 
     teacher_ids = envs["TEACHER_IDS"].split(",")
@@ -86,9 +86,9 @@ if __name__ == "__main__":
             if schedules:
                 teacher_name = teachers[teacher_id].name
                 teacher_name_text += teacher_name + ", "
-                mail_text += "--- Teacher '{0}' reservable schedule ---\n".format(teacher_name)
-                mail_text += "PC: http://eikaiwa.dmm.com/teacher/index/{0}/\n".format(teacher_id)
-                mail_text += "Mobile: http://eikaiwa.dmm.com/teacher/schedule/{0}/\n".format(teacher_id)
+                mail_text += "--- Teacher '{}' reservable schedule ---\n".format(teacher_name)
+                mail_text += "PC: http://eikaiwa.dmm.com/teacher/index/{}/\n".format(teacher_id)
+                mail_text += "Mobile: http://eikaiwa.dmm.com/teacher/schedule/{}/\n".format(teacher_id)
                 mail_text += "\n"
                 for s in schedules:
                     mail_text += "  " + s.datetime
@@ -101,7 +101,7 @@ if __name__ == "__main__":
             notification_emails = os.environ.get("NOTIFICATION_EMAILS")
             if not notification_emails:
                 raise (EnvironmentError("Env 'NOTIFICATION_EMAILS' is not defined."))
-            logger.debug("Sending email to {0}".format(notification_emails))
+            logger.debug("Sending email to {}".format(notification_emails))
             mailer = Mailer(  # Mailer
                 os.environ.get("SENDGRID_USERNAME"),
                 os.environ.get("SENDGRID_PASSWORD"),
@@ -109,7 +109,7 @@ if __name__ == "__main__":
             mailer.send_multi(
                 from_address="noreply@lampetty.net",
                 to_addresses=notification_emails.split(","),
-                subject="[DMMEikaiwa] Schedules of teacher {0}".format(teacher_name_text),
+                subject="[DMMEikaiwa] Schedules of teacher {}".format(teacher_name_text),
                 body=mail_text,
             )
         for future in tracker_futures:
