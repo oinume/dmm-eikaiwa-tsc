@@ -39,7 +39,7 @@ class TeacherScheduleFetcher:
         for time_item in time_items:
             time_class = time_item.attrib["class"]
             text = time_item.text_content().strip()
-            # print("{time_class}:{text}".format(**locals()))
+            # logger.debug("web {time_class}:{text}".format(**locals()))
             # blank, reservable, reserved
             if time_class == "date":
                 match = re.match(r"([\d]+)月([\d]+)日(.+)", text)
@@ -58,7 +58,7 @@ class TeacherScheduleFetcher:
                 dt = datetime.datetime(date.year, date.month, date.day, hour, minute, 0, 0)
                 if text == "終了":
                     status = "finished"
-                elif text == "予約済" or "休講":  # TODO: Add this status to enum
+                elif text in ("予約済", "休講"):  # TODO: Add this status to enum
                     status = "reserved"
                 elif text == "予約可":
                     status = "reservable"
