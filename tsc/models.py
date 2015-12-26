@@ -151,11 +151,4 @@ class GitHub:
         latest = self.get_latest_tag()
         if latest is None:
             return False
-        return GitHub._numerize(latest) > GitHub._numerize(version)
-
-    @staticmethod
-    def _numerize(s: str) -> int:
-        total = 0
-        for n in ".".split(s):
-            total += int(n) * 100
-        return total
+        return latest.split(".") > version.split(".")

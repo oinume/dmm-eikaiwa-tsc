@@ -99,9 +99,11 @@ if __name__ == "__main__":
         if mail_text:
             #print("--- mail_text ---")
             #print(mail_text)
-            if github.has_new_version(tsc.__version__):
-                mail_text = "" + mail_text
-                pass  # TODO:
+            if github.has_newer_version(tsc.__version__):
+                latest = github.get_latest_tag()
+                banner = "New version ({}) of this app is available. Please upgrade with following instruction.\n".format(latest)
+                banner += "https://github.com/oinume/dmm-eikaiwa-tsc/blob/master/README.md#updating-this-application\n\n\n"
+                mail_text = banner + mail_text
             notification_emails = os.environ.get("NOTIFICATION_EMAILS")
             if not notification_emails:
                 raise (EnvironmentError("Env 'NOTIFICATION_EMAILS' is not defined."))
