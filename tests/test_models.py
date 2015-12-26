@@ -1,5 +1,6 @@
+import os
+
 from tsc.models import *
-import datetime
 
 
 def test_get_new_reservable_schedules():
@@ -17,3 +18,8 @@ def test_get_new_reservable_schedules():
     assert schedules == [
         Schedule(1, datetime.datetime(2015, 11, 2, 11, 00), ScheduleStatus.reservable)
     ]
+
+
+def test_github_get_latest_tag():
+    gh = GitHub(os.environ.get("GITHUB_API_TOKEN"))
+    assert gh.get_latest_tag().split(".") >= "1.0.0".split(".")
