@@ -11,7 +11,7 @@ from typing import Dict, List
 from tsc.fetcher import TeacherScheduleFetcher
 import tsc.log
 from tsc.mailer import Mailer
-from tsc.models import DB, Schedule
+from tsc.models import DB, GitHub, Schedule
 from tsc.tracker import Tracker
 
 
@@ -81,6 +81,7 @@ if __name__ == "__main__":
         # TODO: Use template engine
         mail_text = ""
         teacher_name_text = ""
+        github = GitHub(os.environ.get("GITHUB_API_TOKEN"))
         for teacher_id in sorted(schedules_per_teachers):
             schedules = schedules_per_teachers[teacher_id]
             if schedules:
@@ -98,6 +99,11 @@ if __name__ == "__main__":
         if mail_text:
             #print("--- mail_text ---")
             #print(mail_text)
+            if github.has_newer_version(tsc.__version__):
+                latest = github.get_latest_version()
+                banner = "New version ({}) of this app is available. Please upgrade with following instruction.\n".format(latest)
+                banner += "https://github.com/oinume/dmm-eikaiwa-tsc/blob/master/README.md#updating-this-application\n\n\n"
+                mail_text = banner + mail_text
             notification_emails = os.environ.get("NOTIFICATION_EMAILS")
             if not notification_emails:
                 raise (EnvironmentError("Env 'NOTIFICATION_EMAILS' is not defined."))

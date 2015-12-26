@@ -1,8 +1,8 @@
 import datetime
 import difflib
 import enum
+import github
 import json
-import os
 import pymysql
 import pymysql.cursors
 from typing import List
@@ -10,6 +10,7 @@ import urllib.parse
 # Register database schemes in URLs.
 urllib.parse.uses_netloc.append("mysql")
 
+import tsc
 
 class Teacher:
 
@@ -132,3 +133,22 @@ ORDER BY datetime
             for row in cursor.fetchall():
                 schedules.append(Schedule(row["teacher_id"], row["datetime"], ScheduleStatus(row["status"])))
             return schedules
+
+
+class GitHub:
+
+    def __init__(self, token: str=None):
+        self.client = github.Github(token)
+
+    def get_latest_version(self) -> str:
+        repo = self.client.get_repo("oinume/dmm-eikaiwa-tsc")
+        tags = list(repo.get_tags())
+        if len(tags) == 0:
+            return None  # TODO: Use Optional
+        return tags[0].name
+
+    def has_newer_version(self, version: str) -> bool:
+        latest = self.get_latest_version()
+        if latest is None:
+            return False
+        return latest.split(".") > version.split(".")
