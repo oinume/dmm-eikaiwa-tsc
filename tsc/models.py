@@ -140,7 +140,7 @@ class GitHub:
     def __init__(self, token: str=None):
         self.client = github.Github(token)
 
-    def get_latest_tag(self) -> str:
+    def get_latest_version(self) -> str:
         repo = self.client.get_repo("oinume/dmm-eikaiwa-tsc")
         tags = list(repo.get_tags())
         if len(tags) == 0:
@@ -148,7 +148,7 @@ class GitHub:
         return tags[0].name
 
     def has_newer_version(self, version: str) -> bool:
-        latest = self.get_latest_tag()
+        latest = self.get_latest_version()
         if latest is None:
             return False
         return latest.split(".") > version.split(".")

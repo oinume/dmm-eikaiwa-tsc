@@ -100,7 +100,7 @@ if __name__ == "__main__":
             #print("--- mail_text ---")
             #print(mail_text)
             if github.has_newer_version(tsc.__version__):
-                latest = github.get_latest_tag()
+                latest = github.get_latest_version()
                 banner = "New version ({}) of this app is available. Please upgrade with following instruction.\n".format(latest)
                 banner += "https://github.com/oinume/dmm-eikaiwa-tsc/blob/master/README.md#updating-this-application\n\n\n"
                 mail_text = banner + mail_text

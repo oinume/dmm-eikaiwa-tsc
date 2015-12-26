@@ -22,4 +22,4 @@ def test_get_new_reservable_schedules():
 
 def test_github_get_latest_tag():
     gh = GitHub(os.environ.get("GITHUB_API_TOKEN"))
-    assert gh.get_latest_tag().split(".") >= "1.0.0".split(".")
+    assert gh.get_latest_version().split(".") >= "1.0.0".split(".")
