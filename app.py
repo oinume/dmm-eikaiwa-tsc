@@ -4,7 +4,7 @@
 import os
 from sys import argv
 import bottle
-from bottle import default_app, request, route, response, get
+from bottle import template, response, get
 from tsc.models import DB
 
 bottle.debug(True)
@@ -15,6 +15,33 @@ if __name__ == "__main__":
 
 @get("/")
 def index():
+    html = """
+<html>
+<head>
+<meta charset="UTF-8"></meta>
+<title>dmm-eikaiwa-tsc - Teacher Schedule Checker for DMM Eikaiwa</title>
+</head>
+<body>
+Want to know how to use this app? See <a href="https://github.com/oinume/dmm-eikaiwa-tsc/blob/master/README.md">README</a>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-2241989-17', 'auto');
+  ga('send', 'pageview');
+</script>
+</body>
+</html>
+    """
+    return template(html)
+
+
+
+@get("/status")
+def status():
     response.content_type = "application/json; charset=utf-8"
     conn = None
     try:
