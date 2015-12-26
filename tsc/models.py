@@ -10,6 +10,7 @@ import urllib.parse
 # Register database schemes in URLs.
 urllib.parse.uses_netloc.append("mysql")
 
+import tsc
 
 class Teacher:
 
@@ -141,7 +142,20 @@ class GitHub:
 
     def get_latest_tag(self) -> str:
         repo = self.client.get_repo("oinume/dmm-eikaiwa-tsc")
-        tags = list(repos.get_tags())
+        tags = list(repo.get_tags())
         if len(tags) == 0:
             return None  # TODO: Use Optional
         return tags[0].name
+
+    def has_newer_version(self, version: str) -> bool:
+        latest = self.get_latest_tag()
+        if latest is None:
+            return False
+        return GitHub._numerize(latest) > GitHub._numerize(version)
+
+    @staticmethod
+    def _numerize(s: str) -> int:
+        total = 0
+        for n in ".".split(s):
+            total += int(n) * 100
+        return total

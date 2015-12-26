@@ -1,5 +1,6 @@
 import os
 import sys
+import tsc
 
 
 def read_file(name):
@@ -23,7 +24,7 @@ install_requires = read_file("requirements/base.txt").splitlines()
 tests_require = read_file("requirements/development.txt").splitlines()
 setup(
     name="dmm-eikaiwa-tsc",
-    version="1.0.0",
+    version=tsc.__version__,
     url="https://github.com/oinume/dmm-eikaiwa-tsc/",
     license="MIT",
     author="Kazuhiro Oinuma",
