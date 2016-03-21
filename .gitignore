@@ -71,4 +71,4 @@ target/
 
 # Node
 /node_modules
-/static/app
+/static/built
