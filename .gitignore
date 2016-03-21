@@ -69,3 +69,5 @@ target/
 # direnv
 .envrc
 
+# Node
+node_modules
