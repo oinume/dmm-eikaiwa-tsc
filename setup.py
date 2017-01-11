@@ -37,7 +37,7 @@ setup(
     platforms="unix",
     install_requires=install_requires,
     tests_require=tests_require[1:],
-#    data_files=[],
+    data_files=[],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Environment :: Console",
